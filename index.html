@@ -76,7 +76,7 @@ header.brand p{margin:2px 0 0;color:var(--sub);font-size:12px}
 h2{font-size:13px;margin:18px 0 8px;color:var(--sub);font-weight:700;letter-spacing:.05em}
 h2:first-child{margin-top:0}
 label.f{display:block;font-size:12px;color:var(--sub);margin:8px 0 3px}
-input[type=text],input[type=url],input[type=number],select,textarea{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:#fff}
+input[type=text],input[type=url],input[type=number],input[type=password],select,textarea{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:#fff}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
 textarea{resize:vertical;min-height:70px}
 input[type=color]{width:38px;height:32px;padding:2px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
@@ -168,6 +168,17 @@ main{position:relative;min-width:0;min-height:0}
 .modal.on{display:flex}
 .modal .box{background:var(--panel);border-radius:14px;padding:16px;max-width:min(900px,100%);max-height:100%;overflow:auto}
 .modal img{max-width:100%;border-radius:8px;border:1px solid var(--line)}
+.auth{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:48px 16px 32px;
+  background:radial-gradient(1000px 460px at 50% -10%,#fbe9dd 0%,rgba(251,233,221,0) 70%),var(--bg)}
+.auth-card{width:min(400px,100%);text-align:center}
+.auth-logo{line-height:1.1}
+.auth-tag{font-size:13px;color:var(--sub);margin:8px 0 22px;letter-spacing:.12em}
+.auth-form{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 20px 16px;text-align:left;box-shadow:0 6px 24px rgba(80,50,30,.07)}
+.auth-h{font-size:18px;color:var(--ink);margin:0 0 6px;text-align:center}
+.auth-form input{font-size:16px;padding:10px 12px}
+.auth-form .btn.full{margin-top:16px;padding:12px;font-size:15px}
+.auth-link{display:block;margin:12px auto 0;background:none;border:0;color:var(--accent);font-size:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.auth-note{font-size:11px;color:var(--sub);line-height:1.6;margin-top:14px}
 .splash{position:fixed;inset:0;z-index:25;overflow:auto;display:none;padding:28px 24px 40px;
   background:radial-gradient(1200px 500px at 50% -10%,#fbe9dd 0%,rgba(251,233,221,0) 70%),var(--bg)}
 .splash.on{display:block}
@@ -230,7 +241,7 @@ main{position:relative;min-width:0;min-height:0}
 .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--sub)}
 
 @media (max-width:860px){
-  input[type=text],input[type=url],input[type=number],select,textarea{font-size:16px}
+  input[type=text],input[type=url],input[type=number],input[type=password],select,textarea{font-size:16px}
   #autoCard{display:none}
   .night-btn{bottom:62px;padding:8px 13px}.night-panel{bottom:106px;width:min(260px,calc(100% - 24px))}
   #app{grid-template-columns:1fr;grid-template-rows:auto auto;height:auto;min-height:100vh;min-height:100svh}
@@ -537,6 +548,7 @@ main{position:relative;min-width:0;min-height:0}
   <aside id="furnPanel" aria-label="メニューと配置した家具の一覧">
     <nav class="fp-menu">
       <button class="fp-menu-item" id="btnHome"><span>🏠</span>ホーム<small>最初の画面に戻る</small></button>
+      <button class="fp-menu-item" id="btnLogout" style="display:none"><span>🚪</span>ログアウト<small id="logoutWho"></small></button>
     </nav>
     <div class="fp-head">
       <div><strong>配置した家具</strong> <span id="itemCount" class="fp-count"></span></div>
@@ -550,6 +562,35 @@ main{position:relative;min-width:0;min-height:0}
   </aside>
 </div>
 
+<div class="auth" id="authGate" style="display:none">
+  <div class="auth-card">
+    <div class="auth-logo"><span class="sp-my">My</span> <span class="sp-name">インテレ</span></div>
+    <div class="auth-tag">理想の部屋を、3Dでかたちに。</div>
+    <form id="loginForm" class="auth-form" autocomplete="on" novalidate>
+      <h2 class="auth-h">ログイン</h2>
+      <label class="f" for="liId">ID</label>
+      <input type="text" id="liId" name="username" autocomplete="username" autocapitalize="off" spellcheck="false" inputmode="latin">
+      <label class="f" for="liPw">パスワード</label>
+      <input type="password" id="liPw" name="password" autocomplete="current-password">
+      <div id="liMsg"></div>
+      <button type="submit" class="btn primary full" id="liBtn">ログイン</button>
+      <button type="button" class="auth-link" id="toSignup">新規作成</button>
+    </form>
+    <form id="signupForm" class="auth-form" autocomplete="on" novalidate style="display:none">
+      <h2 class="auth-h">新規作成</h2>
+      <label class="f" for="suId">ID（好きな名前・英数字5字以上）</label>
+      <input type="text" id="suId" name="username" autocomplete="username" autocapitalize="off" spellcheck="false" inputmode="latin" placeholder="例：morikawa01">
+      <label class="f" for="suPw">パスワード（英数字5字以上）</label>
+      <input type="password" id="suPw" name="new-password" autocomplete="new-password">
+      <label class="f" for="suPw2">パスワード（確認のため、もう一度）</label>
+      <input type="password" id="suPw2" name="new-password-confirm" autocomplete="new-password">
+      <div id="suMsg"></div>
+      <button type="submit" class="btn primary full" id="suBtn">登録してはじめる</button>
+      <button type="button" class="auth-link" id="toLogin">ログインに戻る</button>
+    </form>
+    <p class="auth-note">IDとデザインは、この端末のブラウザの中に保存されます。ほかの端末とは共有されません。パスワードは忘れると戻せないので、メモしておいてください。</p>
+  </div>
+</div>
 <div class="splash" id="startModal">
   <header class="sp-head">
     <div class="sp-side"></div>
@@ -988,7 +1029,56 @@ function defaultState() {
   };
 }
 
-let state = loadLocal('room3d.current') || defaultState();
+/* ---------- ログイン（この端末のブラウザに保存） ---------- */
+const STANDALONE = (() => { try { return window.self === window.top; } catch (_) { return false; } })();
+const ID_RE = /^[A-Za-z0-9]{5,}$/;
+function accounts() { try { return JSON.parse(localStorage.getItem('room3d.accounts') || '{}'); } catch (_) { return {}; } }
+function saveAccounts(a) { try { localStorage.setItem('room3d.accounts', JSON.stringify(a)); return true; } catch (_) { return false; } }
+let currentUser = null;
+if (STANDALONE) { try { const sid = localStorage.getItem('room3d.session'); if (sid && accounts()[sid]) currentUser = sid; } catch (_) {} }
+// ログイン中は、デザインの保存先をIDごとに分ける
+function uk(k) { return currentUser && (k === 'room3d.current' || k === 'room3d.layouts') ? `room3d.u.${currentUser}.${k.slice(7)}` : k; }
+const b64e = u8 => btoa(String.fromCharCode(...u8));
+const b64d = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+function sha256(bytes) {
+  const K = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2];
+  const H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+  const l = bytes.length, n = ((l + 9 + 63) >> 6) << 6, m = new Uint8Array(n); m.set(bytes); m[l] = 0x80;
+  const dv = new DataView(m.buffer); dv.setUint32(n - 4, l * 8); dv.setUint32(n - 8, Math.floor(l / 0x20000000));
+  const w = new Uint32Array(64), r = (x, k) => (x >>> k) | (x << (32 - k));
+  for (let o = 0; o < n; o += 64) {
+    for (let i = 0; i < 16; i++) w[i] = dv.getUint32(o + i * 4);
+    for (let i = 16; i < 64; i++) { const s0 = r(w[i - 15], 7) ^ r(w[i - 15], 18) ^ (w[i - 15] >>> 3), s1 = r(w[i - 2], 17) ^ r(w[i - 2], 19) ^ (w[i - 2] >>> 10); w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0; }
+    let [a, b, c, d, e, f, g, h] = H;
+    for (let i = 0; i < 64; i++) {
+      const t1 = (h + (r(e, 6) ^ r(e, 11) ^ r(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + w[i]) | 0, t2 = ((r(a, 2) ^ r(a, 13) ^ r(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+      h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+    }
+    H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0; H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+  }
+  const out = new Uint8Array(32), ov = new DataView(out.buffer); H.forEach((v, i) => ov.setUint32(i * 4, v)); return out;
+}
+// パスワードはそのまま保存せず、ソルト付きで何度もハッシュ化した値だけを保存する
+async function hashPw(pw, saltB64) {
+  const salt = saltB64 ? b64d(saltB64) : crypto.getRandomValues(new Uint8Array(16)), enc = new TextEncoder();
+  if (crypto.subtle) {
+    const key = await crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveBits']);
+    const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: 150000, hash: 'SHA-256' }, key, 256);
+    return { salt: b64e(salt), hash: b64e(new Uint8Array(bits)), algo: 'pbkdf2' };
+  }
+  let h = new Uint8Array([...salt, ...enc.encode(pw)]);
+  for (let i = 0; i < 3000; i++) h = sha256(new Uint8Array([...h, ...salt]));
+  return { salt: b64e(salt), hash: b64e(h), algo: 'sha256x' };
+}
+async function checkPw(acc, pw) {
+  if (acc.algo === 'sha256x' && crypto.subtle) {
+    const salt = b64d(acc.salt), enc = new TextEncoder(); let h = new Uint8Array([...salt, ...enc.encode(pw)]);
+    for (let i = 0; i < 3000; i++) h = sha256(new Uint8Array([...h, ...salt]));
+    return b64e(h) === acc.hash;
+  }
+  return (await hashPw(pw, acc.salt)).hash === acc.hash;
+}
+let state = (STANDALONE && !currentUser ? null : loadLocal('room3d.current')) || defaultState();
 normalizeState(state);
 let selectedId = null;
 const undoStack = [];
@@ -2706,8 +2796,8 @@ for (const [id, key, isNum] of [['#rH', 'height', true], ['#rT', 'thickness', tr
 }
 
 /* ================= 保存 ================= */
-function loadLocal(k) { try { const s = localStorage.getItem(k); return s ? JSON.parse(s) : null; } catch (_) { return null; } }
-function saveLocal(k, v) { try { localStorage.setItem(k, JSON.stringify(v, (key, val) => key === '_warn' ? undefined : val)); } catch (_) {} }
+function loadLocal(k) { try { const s = localStorage.getItem(uk(k)); return s ? JSON.parse(s) : null; } catch (_) { return null; } }
+function saveLocal(k, v) { if (STANDALONE && !currentUser && (k === 'room3d.current' || k === 'room3d.layouts')) return; try { localStorage.setItem(uk(k), JSON.stringify(v, (key, val) => key === '_warn' ? undefined : val)); } catch (_) {} }
 const cleanState = () => { syncLevel(); return JSON.parse(JSON.stringify(state, (k, v) => k === '_warn' ? undefined : v)); };
 let db = null, userId = null;
 function layoutsCol() { return db && userId ? db.collection('data/users/' + userId) : null; }
@@ -2838,10 +2928,10 @@ function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add
 
 /* ================= 間取り図・写真から部屋を作る（AI） ================= */
 let stFiles = [];
-const hadSaved = !!loadLocal('room3d.current');
+const hasSaved = () => !!loadLocal('room3d.current');
 function openStart(fromApp, resume) {
   const m = $('#startModal');
-  $('#stResume').style.display = fromApp && (resume ?? hadSaved) ? 'flex' : 'none';
+  $('#stResume').style.display = fromApp && (resume ?? hasSaved()) ? 'flex' : 'none';
   $('#stResumeInfo').textContent = `「${state.name}」 家具${state.items.length}点`;
   $('#stClose').style.display = fromApp ? 'none' : '';
   $('#stResult').style.display = 'none';
@@ -2875,7 +2965,7 @@ $('#hmSave').onclick = async () => {
 };
 $('#hmDiscard').onclick = () => {
   undoStack.length = 0;
-  try { localStorage.removeItem('room3d.current'); } catch (_) {}
+  try { localStorage.removeItem(uk('room3d.current')); } catch (_) {}
   const st = defaultState(); st.items = []; st.name = 'マイルーム'; st.layoutId = null;
   state = st; normalizeState(state); selectedId = null; fullRefresh(); frameCamera();
   goHome(false); toast('今の編集内容を消去しました');
@@ -3092,7 +3182,78 @@ async function useCap(name) {
   }
   aiChecked = true; updateBuildBtn();
 })();
-openStart(true);
+/* ---------- ログイン画面 ---------- */
+function showAuth(mode = 'login') {
+  $('#authGate').style.display = 'flex';
+  $('#loginForm').style.display = mode === 'login' ? '' : 'none';
+  $('#signupForm').style.display = mode === 'signup' ? '' : 'none';
+  $('#liMsg').innerHTML = ''; $('#suMsg').innerHTML = '';
+  setTimeout(() => (mode === 'login' ? $('#liId') : $('#suId')).focus(), 50);
+}
+function updateUserUi() {
+  $('#btnLogout').style.display = currentUser ? '' : 'none';
+  const acc = currentUser && accounts()[currentUser];
+  $('#logoutWho').textContent = acc ? `ID：${acc.display || currentUser}` : '';
+}
+function afterLogin(id) {
+  currentUser = id;
+  try { localStorage.setItem('room3d.session', id); } catch (_) {}
+  const saved = loadLocal('room3d.current');
+  state = saved || defaultState(); if (!saved) { state.items = []; state.name = 'マイルーム'; }
+  normalizeState(state); undoStack.length = 0; selectedId = null; inspectorOpen = false;
+  fullRefresh(); frameCamera(); updateUserUi();
+  $('#authGate').style.display = 'none';
+  openStart(true, !!saved);
+}
+$('#toSignup').onclick = () => showAuth('signup');
+$('#toLogin').onclick = () => showAuth('login');
+$('#signupForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const idRaw = $('#suId').value.trim(), pw = $('#suPw').value, pw2 = $('#suPw2').value, id = idRaw.toLowerCase();
+  if (!ID_RE.test(idRaw)) { showMsg('#suMsg', 'err', 'IDは英数字（半角のa〜z、A〜Z、0〜9）で5文字以上にしてください。'); return; }
+  if (!ID_RE.test(pw)) { showMsg('#suMsg', 'err', 'パスワードは英数字（半角）で5文字以上にしてください。'); return; }
+  if (pw !== pw2) { showMsg('#suMsg', 'err', '確認用のパスワードが一致しません。'); return; }
+  const accs = accounts();
+  if (accs[id]) { showMsg('#suMsg', 'err', 'そのIDはすでに使われています。別のIDにするか、ログインしてください。'); return; }
+  $('#suBtn').disabled = true;
+  try {
+    const first = !Object.keys(accs).length;
+    accs[id] = { display: idRaw, ...(await hashPw(pw)), created: Date.now() };
+    if (!saveAccounts(accs)) { showMsg('#suMsg', 'err', 'この端末に保存できませんでした。ブラウザのプライベートモードを解除してお試しください。'); return; }
+    // はじめてのアカウントには、これまでこの端末で作っていたデザインを引き継ぐ
+    if (first) {
+      try {
+        for (const k of ['current', 'layouts']) { const v = localStorage.getItem('room3d.' + k); if (v && !localStorage.getItem(`room3d.u.${id}.${k}`)) localStorage.setItem(`room3d.u.${id}.${k}`, v); }
+      } catch (_) {}
+    }
+    $('#suPw').value = $('#suPw2').value = '';
+    afterLogin(id); toast(`ID「${idRaw}」を登録しました`);
+  } finally { $('#suBtn').disabled = false; }
+});
+$('#loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const id = $('#liId').value.trim().toLowerCase(), pw = $('#liPw').value;
+  if (!id || !pw) { showMsg('#liMsg', 'err', 'IDとパスワードを入力してください。'); return; }
+  const acc = accounts()[id];
+  $('#liBtn').disabled = true;
+  try {
+    if (!acc || !(await checkPw(acc, pw))) { showMsg('#liMsg', 'err', 'IDまたはパスワードが違います。はじめての方は「新規作成」から登録してください。'); return; }
+    $('#liPw').value = '';
+    afterLogin(id); toast(`ようこそ、${acc.display || id} さん`);
+  } finally { $('#liBtn').disabled = false; }
+});
+$('#btnLogout').onclick = () => {
+  if (typeof setDrawer === 'function') setDrawer(false);
+  syncLevel(); saveLocal('room3d.current', state);
+  try { localStorage.removeItem('room3d.session'); } catch (_) {}
+  currentUser = null; undoStack.length = 0; selectedId = null;
+  if (night) applyNight(false);
+  closeStart(); updateUserUi(); showAuth('login'); $('#liId').value = '';
+  toast('ログアウトしました');
+};
+updateUserUi();
+if (STANDALONE && !currentUser) showAuth('login');
+else openStart(true);
 (async () => {
   const [d, u] = await Promise.all([useCap('db'), useCap('user')]);
   if (d && u) { try { userId = await u.id(); } catch (_) { userId = null; } if (userId) db = d; }
