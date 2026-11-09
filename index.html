@@ -131,22 +131,6 @@ main{position:relative;min-width:0;min-height:0}
 .opts{display:inline-flex;align-items:center;gap:10px;padding:5px 10px;border:1px solid var(--line);border-radius:9px;background:var(--panel);font-size:12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .opts label{display:inline-flex;align-items:center;gap:4px;cursor:pointer}
 .opts select{width:auto;padding:2px 4px}
-.trace-panel{position:absolute;top:56px;left:50%;transform:translateX(-50%);z-index:5;width:min(560px,calc(100% - 24px));background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:0 8px 26px rgba(0,0,0,.16);display:none;font-size:13px}
-.trace-panel.on{display:block}
-.trace-panel.on ~ .legend{display:none}
-.tp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.tp-steps{display:flex;gap:4px;margin-bottom:6px}
-.tp-steps button{flex:1;padding:6px 4px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:12px;cursor:pointer;color:var(--sub)}
-.tp-steps button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
-.tp-steps button.done{color:var(--ok);border-color:#bcd3c2}
-.tp-hint{background:#faf6f0;border-radius:8px;padding:7px 9px;line-height:1.55;color:#4a433d}
-.tp-row{display:flex;gap:8px;align-items:center;margin-top:7px;flex-wrap:wrap}
-.tp-row input[type=number]{flex:1;min-width:140px}
-.tp-row.seg{display:none;width:100%}.tp-row.seg.show{display:flex}.tp-row.seg button{flex:1}
-#trScaleRow{display:none}#trScaleRow.show{display:flex}
-.tp-opts label{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--sub)}
-.tp-opts input[type=range]{width:110px}
-.tp-acts{justify-content:flex-end}
 .night-btn{position:absolute;right:12px;bottom:12px;z-index:3;padding:9px 16px;border-radius:999px;border:1px solid #2a3350;background:#1c2340;color:#f3e7c9;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 .night-btn.day{background:#fff6dc;color:#7a5a12;border-color:#f0d78c}
 .night-panel{position:absolute;right:12px;bottom:58px;z-index:3;width:250px;background:rgba(22,28,48,.94);color:#ecebf3;border-radius:12px;padding:10px 12px;display:none;box-shadow:0 8px 26px rgba(0,0,0,.35);font-size:13px}
@@ -207,6 +191,7 @@ main{position:relative;min-width:0;min-height:0}
 .sp-resume{max-width:1120px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:13px;color:var(--sub)}
 .sp-resume b{color:var(--ink)}
 .sp-grid{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+.sp-grid.single{grid-template-columns:1fr;max-width:680px}
 .card.opt{position:relative;padding:20px 20px 18px;border-radius:16px;box-shadow:0 6px 24px rgba(80,50,30,.07)}
 .card.opt .st-h3{font-size:17px;margin:0 0 6px;padding-left:40px;line-height:30px}
 .opt-num{position:absolute;left:20px;top:20px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
@@ -257,7 +242,6 @@ main{position:relative;min-width:0;min-height:0}
 .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--sub)}
 
 @media (max-width:860px){
-  .trace-panel{top:52px;padding:8px 10px}.tp-opts input[type=range]{width:80px}
   input[type=text],input[type=url],input[type=number],input[type=password],select,textarea{font-size:16px}
   #autoCard{display:none}
   .night-btn{bottom:62px;padding:8px 13px}.night-panel{bottom:106px;width:min(260px,calc(100% - 24px))}
@@ -390,12 +374,7 @@ main{position:relative;min-width:0;min-height:0}
 
       <!-- 部屋 -->
       <section class="pane" id="pane-room">
-        <button class="btn primary full" id="btnFromImage" style="margin:0 0 8px">🏠 間取りを選び直す（写真・基本の間取り）</button>
-        <label class="btn full" style="margin:0 0 8px">✏️ 間取り図をなぞって作る<input type="file" id="trFile" accept="image/*" hidden></label>
-        <div class="card" id="ulCard" style="display:none;margin-bottom:14px">
-          <label style="display:flex;gap:6px;align-items:center;font-size:13px"><input type="checkbox" id="ulShow" checked>下絵（なぞった間取り図）を上から表示で見せる</label>
-          <div class="row" style="margin-top:6px;align-items:center"><span class="hint" style="margin:0;flex:0 0 auto">濃さ</span><input type="range" id="ulOpacity" min="10" max="90" value="45"><button class="btn small danger shrink" id="ulDelete">下絵を削除</button></div>
-        </div>
+        <button class="btn primary full" id="btnFromImage" style="margin:0 0 14px">🏠 間取りを選び直す</button>
         <h2>部屋の形</h2>
         <p class="hint" style="margin-top:0">基本の間取りを文字から選ぶ（ドア・窓・水回りも入ります。家具はそのまま）</p>
         <div class="lt-opts small">
@@ -513,24 +492,6 @@ main{position:relative;min-width:0;min-height:0}
       </div>
     </div>
     <button class="tbtn" id="btnMenu" aria-label="メニューと配置した家具の一覧を開く">☰<span id="menuCount"></span></button>
-    <div id="tracePanel" class="trace-panel">
-      <div class="tp-head"><b>✏️ 間取り図をなぞる</b><button class="btn small" id="trCancel">やめる</button></div>
-      <div class="tp-steps" id="trSteps">
-        <button data-step="scale">1 縮尺</button><button data-step="outline">2 外周</button><button data-step="inner">3 間仕切り</button><button data-step="open">4 ドア・窓</button>
-      </div>
-      <div class="tp-hint" id="trHint"></div>
-      <div class="tp-row" id="trScaleRow"><input type="number" id="trLen" placeholder="2点間の実際の長さ（cm）"><button class="btn small primary" id="trScaleOk">合わせる</button></div>
-      <div class="tp-row seg" id="trOpenType"><button data-ot="door" class="on">ドア</button><button data-ot="slide">引き戸</button><button data-ot="window">窓</button><button data-ot="sweep">掃き出し窓</button></div>
-      <div class="tp-row tp-opts">
-        <label><input type="checkbox" id="trOrtho" checked>直角に補正</label>
-        <label>下絵の濃さ<input type="range" id="trOpacity" min="15" max="100" value="70"></label>
-      </div>
-      <div class="tp-row tp-acts">
-        <button class="btn small" id="trUndo">↶ 1つ戻す</button>
-        <button class="btn small" id="trNext">次へ ›</button>
-        <button class="btn small primary" id="trDone">✅ 完成</button>
-      </div>
-    </div>
     <div id="measureInfo"></div>
     <div id="placeBanner"></div>
     <button id="nightBtn" class="night-btn">🌙 夜ver</button>
@@ -641,9 +602,9 @@ main{position:relative;min-width:0;min-height:0}
     <span>前回の続き：<b id="stResumeInfo"></b></span>
     <button class="btn primary small" id="stContinue">続きから開く</button>
   </div>
-  <div class="sp-grid">
-    <div class="sp-col">
-  <div class="card opt">
+  <div class="sp-grid single" id="spGrid">
+    <div class="sp-col" id="stAiCol" style="display:none">
+  <div class="card opt" id="stAiCard">
     <div class="opt-num">1</div><h3 class="st-h3">間取り図・部屋の写真から作る</h3>
     <p class="hint" style="margin:-4px 0 10px">画像を入れると、AIがその部屋を3Dで再現します。</p>
     <label class="drop" id="stDrop">
@@ -658,16 +619,14 @@ main{position:relative;min-width:0;min-height:0}
     <input type="text" id="stKnown" placeholder="例：窓のある壁が270cm、天井高240cm">
     <label style="display:flex;gap:6px;align-items:center;margin-top:8px;font-size:13px"><input type="checkbox" id="stFurn" checked>写真に写っている家具も置く</label>
     <button class="btn primary full" id="stBuild" disabled>AIが準備中…</button>
-    <button class="btn full" id="stTrace" disabled style="margin-top:8px">✏️ 間取り図をなぞって作る（AIなし）</button>
-    <p class="hint" id="stTraceHint" style="margin:6px 0 0">画像を1枚選ぶと、その上をクリックでなぞって部屋を作れます。</p>
     <div id="stMsg"></div>
   </div>
   <div class="card" id="stResult" style="display:none"></div>
     </div>
     <div class="sp-col">
   <div class="card opt">
-    <div class="opt-num">2</div><h3 class="st-h3">基本の間取りから選ぶ</h3>
-    <p class="hint" style="margin:-4px 0 10px">画像がないときはこちら。間取りの種類を選ぶと、キッチン・お風呂・トイレ付きの部屋がすぐにできます。</p>
+    <div class="opt-num" id="stTplNum">1</div><h3 class="st-h3">基本の間取りから選ぶ</h3>
+    <p class="hint" style="margin:-4px 0 10px">間取りの種類を選ぶと、キッチン・お風呂・トイレ付きの部屋がすぐにできます。</p>
     <div class="lt-opts">
       <label><input type="checkbox" id="stOptLoft">ロフトを付ける</label>
       <label><input type="checkbox" id="stOptMaison">メゾネット（2階建て）にする</label>
@@ -1079,7 +1038,7 @@ function saveAccounts(a) { try { localStorage.setItem('room3d.accounts', JSON.st
 let currentUser = null;
 if (STANDALONE) { try { const sid = localStorage.getItem('room3d.session'); if (sid && accounts()[sid]) currentUser = sid; } catch (_) {} }
 // ログイン中は、デザインの保存先をIDごとに分ける
-function uk(k) { return currentUser && (k === 'room3d.current' || k === 'room3d.layouts' || k === 'room3d.underlay') ? `room3d.u.${currentUser}.${k.slice(7)}` : k; }
+function uk(k) { return currentUser && (k === 'room3d.current' || k === 'room3d.layouts') ? `room3d.u.${currentUser}.${k.slice(7)}` : k; }
 const b64e = u8 => btoa(String.fromCharCode(...u8));
 const b64d = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 function sha256(bytes) {
@@ -1354,8 +1313,6 @@ const roomGroup = new THREE.Group(); scene.add(roomGroup);
 const itemsGroup = new THREE.Group(); scene.add(itemsGroup);
 const overlayGroup = new THREE.Group(); scene.add(overlayGroup);
 const measureGroup = new THREE.Group(); scene.add(measureGroup);
-const traceGroup = new THREE.Group(); scene.add(traceGroup);
-const underlayGroup = new THREE.Group(); scene.add(underlayGroup);
 let wallMeshes = [];
 
 function disposeGroup(g) {
@@ -1878,7 +1835,6 @@ function setView(mode) {
   if (mode !== 'top') frameCamera();
   fly = null; applyDragMode();
   updateLabelVisibility();
-  if (typeof underlayGroup !== 'undefined') underlayGroup.visible = !!(underlay && underlay.show !== false && mode === 'top' && !trace);
 }
 function resize() {
   const w = view.clientWidth, h = view.clientHeight; if (!w || !h) return;
@@ -2159,7 +2115,6 @@ function rotateTo(it, e) {
 
 const hostEl = view;
 hostEl.addEventListener('pointerdown', e => {
-  if (trace) { traceDown(e); return; }
   if (placing) {
     e.stopPropagation(); e.preventDefault();
     if (e.button === 2) { finishPlacing(true); return; }
@@ -2207,7 +2162,6 @@ hostEl.addEventListener('wheel', e => {
 }, { capture: true, passive: false });
 
 window.addEventListener('pointermove', e => {
-  if (trace) { traceMove(e); return; }
   if (placing) {
     if (e.target !== renderer.domElement && !placing.down) return;
     const it = state.items.find(i => i.id === placing.id); const p = floorPoint(e, 0);
@@ -2228,7 +2182,6 @@ window.addEventListener('pointermove', e => {
   }
 });
 window.addEventListener('pointerup', e => {
-  if (trace) { traceUp(e); return; }
   if (placing) {
     if (placing.down && e.target === renderer.domElement) finishPlacing(false);
     else if (placing) placing.down = false;
@@ -2450,7 +2403,6 @@ renderer.domElement.addEventListener('dblclick', e => {
 window.addEventListener('keydown', e => {
   const tag = (document.activeElement?.tagName || '').toLowerCase();
   if (e.key === 'Escape' && $('#homeModal').classList.contains('on')) { closeHomeDialog(); return; }
-  if (trace && !['input', 'textarea', 'select'].includes(tag)) { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); $('#trUndo').click(); } else if (e.key === 'Enter') $('#trNext').click(); return; }
   if (['input', 'textarea', 'select'].includes(tag)) return;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); return; }
   if (placing) {
@@ -3043,7 +2995,7 @@ $('#stTpl').innerHTML = layoutListHtml();
 $('#stTpl').onclick = e => {
   const t = pickLayout(e, $('#stOptLoft'), $('#stOptMaison')); if (!t) return;
   const withF = $('#stTplFurn').checked;
-  pushUndo(); state = templateState(t, withF); normalizeState(state); selectedId = null; underlay = null; try { localStorage.removeItem(uk('room3d.underlay')); } catch (_) {} refreshUnderlay(); fullRefresh(); frameCamera(); closeStart();
+  pushUndo(); state = templateState(t, withF); normalizeState(state); selectedId = null; fullRefresh(); frameCamera(); closeStart();
   toast(`「${t.name}」を作りました${t.levels ? '（左上の 1F／2F で階を切り替え）' : ''}`);
 };
 $('#stBlank').onclick = () => { pushUndo(); const st = defaultState(); st.items = []; st.name = 'マイルーム'; st.layoutId = null; state = st; selectedId = null; fullRefresh(); frameCamera(); closeStart(); document.querySelector('.tabs button[data-tab="room"]').click(); toast('部屋の横幅・奥行を入力してください'); };
@@ -3064,15 +3016,7 @@ drop.addEventListener('dragleave', () => drop.classList.remove('over'));
 drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); addFiles(e.dataTransfer.files); });
 let aiChecked = false;
 function updateBuildBtn() {
-  const t = $('#stTrace');
-  if (t) {
-    t.disabled = !stFiles.length;
-    const noAi = aiChecked && !(aiSample && aiImages);
-    t.classList.toggle('primary', noAi);
-    $('#stTraceHint').textContent = stFiles.length ? `1枚目の画像（${stFiles.length > 1 ? `${stFiles.length}枚中` : '選んだ画像'}）を下絵にして、なぞって部屋を作ります。` : '画像を1枚選ぶと、その上をクリックでなぞって部屋を作れます。';
-  }
   const b = $('#stBuild');
-  if (aiChecked && !(aiSample && aiImages)) { b.disabled = true; b.textContent = 'AIで作る機能は claude.ai 版で使えます'; return; }
   if (!aiChecked) { b.disabled = true; b.textContent = 'AIが準備中…'; return; }
   if (!aiSample || !aiImages) { b.disabled = true; b.textContent = 'この環境では画像からの作成が使えません'; return; }
   b.disabled = !stFiles.length; b.textContent = stFiles.length ? `AIで部屋を作る（画像${stFiles.length}枚）` : '画像を選ぶとAIで部屋を作れます';
@@ -3215,288 +3159,6 @@ function scaleToWall(i, len) {
 }
 $('#btnScale').onclick = () => scaleToWall(+$('#scWall').value, num($('#scLen').value));
 
-/* ================= 間取り図をなぞって作る ================= */
-let trace = null, traceUnderlay = null, traceDownInfo = null, traceHover = null;
-const OPEN_DEF = { door: { type: 'door', width: 80, swing: 'in', height: 200, sill: 0 }, slide: { type: 'door', width: 90, swing: 'slide', height: 200, sill: 0 },
-  window: { type: 'window', width: 120, sill: 90, height: 110 }, sweep: { type: 'window', width: 170, sill: 0, height: 200 } };
-const TR_HINTS = {
-  scale: '<b>縮尺を合わせます。</b>間取り図の中で長さがわかる所（例：部屋の横幅）の<b>両端を2回クリック</b>して、実際の長さを入れてください。わからなければ「次へ」で飛ばせます（あとで「縮尺を合わせる」でも直せます）。',
-  outline: '<b>部屋の外周</b>の角を、順番にクリックしてください。最後に<b>最初の点をクリック</b>すると外周が閉じます。（ドラッグ：画面を動かす／ホイール・2本指：ズーム）',
-  inner: '<b>部屋の中の壁</b>を引きます。壁の<b>始まりと終わりを2回クリック</b>すると1本引けます。なければ「次へ」。',
-  open: '<b>ドア・窓</b>の種類を選んで、置きたい<b>壁の上をクリック</b>してください。なければ「完成」を押します。'
-};
-async function imageToDataUrl(file, max = 1400) {
-  const blob = await downscale(file, max);
-  return await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(blob); });
-}
-function makeUnderlayMesh(ul) {
-  const img = new Image(); img.src = ul.src;
-  const tex = new THREE.Texture(img); img.onload = () => { tex.needsUpdate = true; };
-  tex.colorSpace = THREE.SRGBColorSpace;
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(ul.w, ul.h), new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: ul.opacity ?? 0.7, depthWrite: false }));
-  m.rotation.x = -Math.PI / 2; m.position.set(ul.x + ul.w / 2, 0.35, ul.z + ul.h / 2); m.renderOrder = 2;
-  return m;
-}
-function fitOrthoTo(minX, minZ, maxX, maxZ) {
-  const cx = (minX + maxX) / 2, cz = (minZ + maxZ) / 2, w = view.clientWidth || 1, h = view.clientHeight || 1, asp = w / h;
-  // 上になぞり用パネルが重なるので、その分だけ下にずらして全体が見えるようにする
-  const panelH = ($('#tracePanel').offsetHeight || 230) + 70, frac = Math.min(0.6, panelH / h);
-  const halfH = Math.max((maxZ - minZ + 80) / 2 / (1 - frac), (maxX - minX + 120) / 2 / asp);
-  ortho.left = -halfH * asp; ortho.right = halfH * asp; ortho.top = halfH; ortho.bottom = -halfH; ortho.zoom = 1; ortho.updateProjectionMatrix();
-  const czv = cz - halfH * frac;
-  ortho.position.set(cx, 2000, czv); controlsTop.target.set(cx, 0, czv); controlsTop.update();
-}
-async function startTrace(file) {
-  let src;
-  try { src = await imageToDataUrl(file); } catch (_) { toast('画像を読み込めませんでした'); return; }
-  const img = new Image();
-  img.onload = () => {
-    const w = 1000, h = Math.round(w * img.height / img.width);
-    trace = { step: 'scale', ul: { src, x: 0, z: 0, w, h, opacity: 0.7 }, pts: [], closed: false, scalePts: [], inner: [], innerStart: null, opens: [], openType: 'door' };
-    if (placing) finishPlacing(true);
-    select(null); closeStart(); if (night) applyNight(false);
-    if (measureMode) $('#btnMeasure').click();
-    setView('top');
-    roomGroup.visible = itemsGroup.visible = overlayGroup.visible = handleGroup.visible = lightsGroup.visible = underlayGroup.visible = false;
-    disposeGroup(traceGroup);
-    traceUnderlay = makeUnderlayMesh(trace.ul); scene.add(traceUnderlay);
-    $('#trOpacity').value = 70; $('#tracePanel').classList.add('on');
-    setTraceStep('scale');
-    fitOrthoTo(0, 0, w, h);
-  };
-  img.src = src;
-}
-function setTraceStep(step) {
-  if (!trace) return;
-  if ((step === 'inner' || step === 'open') && !trace.closed) { toast('先に外周を閉じてください（最初の点をクリック）'); step = 'outline'; }
-  trace.step = step; trace.innerStart = null;
-  const order = ['scale', 'outline', 'inner', 'open'];
-  document.querySelectorAll('#trSteps button').forEach(b => {
-    b.classList.toggle('on', b.dataset.step === step);
-    b.classList.toggle('done', order.indexOf(b.dataset.step) < order.indexOf(step) || (b.dataset.step === 'outline' && trace.closed));
-  });
-  $('#trHint').innerHTML = TR_HINTS[step];
-  $('#trScaleRow').classList.toggle('show', step === 'scale' && trace.scalePts.length === 2);
-  $('#trOpenType').classList.toggle('show', step === 'open');
-  $('#trNext').style.display = step === 'open' ? 'none' : '';
-  drawTrace();
-}
-function trPoint(e) { const p = floorPoint(e, 0); return p ? { x: Math.round(p.x), z: Math.round(p.z) } : null; }
-function snapTrace(p, ref) {
-  let { x, z } = p;
-  const all = [...trace.pts.map(([a, b]) => ({ x: a, z: b })), ...trace.inner.flatMap(w => [{ x: w.a[0], z: w.a[1] }, { x: w.b[0], z: w.b[1] }])];
-  // 既にある角と縦・横をそろえる
-  for (const q of all) { if (Math.abs(q.x - x) < 8) x = q.x; if (Math.abs(q.z - z) < 8) z = q.z; }
-  if ($('#trOrtho').checked && ref) {
-    const dx = x - ref.x, dz = z - ref.z, tan = Math.tan(12 * Math.PI / 180);
-    if (Math.abs(dz) <= Math.abs(dx) * tan) z = ref.z; else if (Math.abs(dx) <= Math.abs(dz) * tan) x = ref.x;
-  }
-  return { x, z };
-}
-function traceEdges() {
-  const out = [];
-  const n = trace.pts.length;
-  if (trace.closed) for (let i = 0; i < n; i++) out.push({ kind: 'outer', i, a: trace.pts[i], b: trace.pts[(i + 1) % n] });
-  trace.inner.forEach((w, j) => out.push({ kind: 'inner', i: j, a: w.a, b: w.b }));
-  return out;
-}
-function nearestEdge(p, maxD) {
-  let best = null;
-  for (const ed of traceEdges()) {
-    const dx = ed.b[0] - ed.a[0], dz = ed.b[1] - ed.a[1], L = Math.hypot(dx, dz) || 1;
-    let t = ((p.x - ed.a[0]) * dx + (p.z - ed.a[1]) * dz) / L; t = clamp(t, 0, L);
-    const qx = ed.a[0] + dx / L * t, qz = ed.a[1] + dz / L * t, d = Math.hypot(p.x - qx, p.z - qz);
-    if (d <= maxD && (!best || d < best.d)) best = { ...ed, t, L, d, q: { x: qx, z: qz } };
-  }
-  return best;
-}
-// 間仕切りの端は、近くの壁や角にくっつける
-function snapToEdges(p) {
-  const all = [...trace.pts, ...trace.inner.flatMap(w => [w.a, w.b])];
-  for (const q of all) if (Math.hypot(q[0] - p.x, q[1] - p.z) < 18) return { x: q[0], z: q[1] };
-  const ne = nearestEdge(p, 14); return ne ? { x: Math.round(ne.q.x), z: Math.round(ne.q.z) } : p;
-}
-function traceClick(p) {
-  const T = trace;
-  if (T.step === 'scale') {
-    if (T.scalePts.length >= 2) T.scalePts = [];
-    T.scalePts.push([p.x, p.z]);
-    if (T.scalePts.length === 2) { $('#trScaleRow').classList.add('show'); setTimeout(() => $('#trLen').focus(), 30); }
-  } else if (T.step === 'outline') {
-    if (T.closed) { toast('外周はできています。「次へ」に進むか、「1つ戻す」で直せます'); return; }
-    const last = T.pts.length ? { x: T.pts[T.pts.length - 1][0], z: T.pts[T.pts.length - 1][1] } : null;
-    let q = snapTrace(p, last);
-    if (T.pts.length >= 3 && Math.hypot(q.x - T.pts[0][0], q.z - T.pts[0][1]) < 25) {
-      T.closed = true; toast('外周を閉じました。次は部屋の中の壁です'); setTraceStep('inner'); return;
-    }
-    if (last && Math.hypot(q.x - last.x, q.z - last.z) < 5) return;
-    T.pts.push([q.x, q.z]);
-  } else if (T.step === 'inner') {
-    let q = snapToEdges(p);
-    if (!T.innerStart) { T.innerStart = [q.x, q.z]; }
-    else {
-      q = snapTrace(q, { x: T.innerStart[0], z: T.innerStart[1] }); q = snapToEdges(q);
-      if (Math.hypot(q.x - T.innerStart[0], q.z - T.innerStart[1]) >= 20) T.inner.push({ a: T.innerStart, b: [q.x, q.z] });
-      T.innerStart = null;
-    }
-  } else if (T.step === 'open') {
-    const ne = nearestEdge(p, 40);
-    if (!ne) { toast('壁の近くをクリックしてください'); return; }
-    const def = OPEN_DEF[T.openType];
-    const width = Math.min(def.width, ne.L);
-    T.opens.push({ kind: ne.kind, i: ne.i, center: ne.t, width, ot: T.openType });
-  }
-  drawTrace();
-}
-function traceDown(e) { traceDownInfo = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId, multi: !!(traceDownInfo && traceDownInfo.id !== e.pointerId) }; }
-function traceUp(e) {
-  const d = traceDownInfo; traceDownInfo = null;
-  if (!d || d.multi || e.target !== renderer.domElement || e.button > 0) return;
-  if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 6 || performance.now() - d.t > 700) return;
-  const p = trPoint(e); if (p) traceClick(p);
-}
-function traceMove(e) {
-  if (e.buttons || e.target !== renderer.domElement || !trace) return;
-  const p = trPoint(e); if (!p) return;
-  let from = null, q = p;
-  if (trace.step === 'outline' && !trace.closed && trace.pts.length) { const l = trace.pts[trace.pts.length - 1]; from = l; q = snapTrace(p, { x: l[0], z: l[1] }); }
-  else if (trace.step === 'inner' && trace.innerStart) { from = trace.innerStart; q = snapToEdges(snapTrace(snapToEdges(p), { x: from[0], z: from[1] })); }
-  else if (trace.step === 'scale' && trace.scalePts.length === 1) { from = trace.scalePts[0]; }
-  if (traceHover) { traceGroup.remove(traceHover); const tmp = new THREE.Group(); tmp.add(traceHover); disposeGroup(tmp); traceHover = null; }
-  if (!from) return;
-  traceHover = new THREE.Group();
-  const ln = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(from[0], 1.5, from[1]), new THREE.Vector3(q.x, 1.5, q.z)]), new THREE.LineDashedMaterial({ color: '#c4643c', dashSize: 6, gapSize: 4, depthTest: false }));
-  ln.computeLineDistances(); ln.renderOrder = 996; traceHover.add(ln);
-  const len = Math.hypot(q.x - from[0], q.z - from[1]);
-  const lb = makeLabel(`${Math.round(len)}cm`, { size: 12, color: '#fff', bg: 'rgba(196,100,60,0.92)', border: 'rgba(0,0,0,0)' });
-  lb.position.set((from[0] + q.x) / 2, 4, (from[1] + q.z) / 2); traceHover.add(lb);
-  traceGroup.add(traceHover); lastSpriteK = -1;
-}
-function drawTrace() {
-  disposeGroup(traceGroup); traceHover = null;
-  if (!trace) return;
-  const T = trace, Y = 1.2, line = (pts, color, w = 1, dashed = false) => {
-    const geo = new THREE.BufferGeometry().setFromPoints(pts.map(([x, z]) => new THREE.Vector3(x, Y, z)));
-    const m = dashed ? new THREE.LineDashedMaterial({ color, dashSize: 6, gapSize: 4, depthTest: false }) : new THREE.LineBasicMaterial({ color, depthTest: false });
-    const l = new THREE.Line(geo, m); if (dashed) l.computeLineDistances(); l.renderOrder = 995; traceGroup.add(l); return l;
-  };
-  const dot = (x, z, r, color) => { const m = new THREE.Mesh(new THREE.CircleGeometry(r, 20), new THREE.MeshBasicMaterial({ color, depthTest: false })); m.rotation.x = -Math.PI / 2; m.position.set(x, Y + 0.2, z); m.renderOrder = 997; traceGroup.add(m); };
-  const lenLabel = (a, b, color = '#2b2724') => { const L = Math.hypot(b[0] - a[0], b[1] - a[1]); if (L < 30) return; const lb = makeLabel(`${Math.round(L)}`, { size: 10, color }); lb.position.set((a[0] + b[0]) / 2, 3, (a[1] + b[1]) / 2); traceGroup.add(lb); };
-  // 縮尺
-  if (T.scalePts.length) { T.scalePts.forEach(([x, z]) => dot(x, z, 5, '#2f6fb0')); if (T.scalePts.length === 2) { line(T.scalePts, '#2f6fb0'); lenLabel(T.scalePts[0], T.scalePts[1], '#2f6fb0'); } }
-  // 外周
-  if (T.pts.length) {
-    const loop = T.closed ? [...T.pts, T.pts[0]] : T.pts;
-    if (loop.length > 1) line(loop, '#c4643c');
-    T.pts.forEach(([x, z], i) => dot(x, z, i === 0 && !T.closed ? 7 : 4, i === 0 && !T.closed ? '#2f8a4f' : '#c4643c'));
-    for (let i = 0; i < loop.length - 1; i++) lenLabel(loop[i], loop[i + 1]);
-  }
-  // 間仕切り
-  T.inner.forEach(w => { line([w.a, w.b], '#5b4a3c'); dot(w.a[0], w.a[1], 3, '#5b4a3c'); dot(w.b[0], w.b[1], 3, '#5b4a3c'); lenLabel(w.a, w.b, '#5b4a3c'); });
-  if (T.innerStart) dot(T.innerStart[0], T.innerStart[1], 6, '#5b4a3c');
-  // ドア・窓
-  const edges = traceEdges();
-  for (const o of T.opens) {
-    const ed = edges.find(e => e.kind === o.kind && e.i === o.i); if (!ed) continue;
-    const dx = ed.b[0] - ed.a[0], dz = ed.b[1] - ed.a[1], L = Math.hypot(dx, dz) || 1, t0 = clamp(o.center - o.width / 2, 0, L - o.width), t1 = t0 + o.width;
-    const A = [ed.a[0] + dx / L * t0, ed.a[1] + dz / L * t0], B = [ed.a[0] + dx / L * t1, ed.a[1] + dz / L * t1];
-    const col = o.ot === 'window' || o.ot === 'sweep' ? '#2f8fd0' : '#e0902a';
-    for (const off of [-2, 0, 2]) line([[A[0] - dz / L * off, A[1] + dx / L * off], [B[0] - dz / L * off, B[1] + dx / L * off]], col);
-  }
-  lastSpriteK = -1;
-}
-function finishTrace() {
-  const T = trace;
-  if (!T || !T.closed || T.pts.length < 3) { toast('外周を閉じてから完成してください'); setTraceStep('outline'); return; }
-  const mx = Math.min(...T.pts.map(p => p[0])), mz = Math.min(...T.pts.map(p => p[1]));
-  const sh = ([x, z]) => [round1(x - mx), round1(z - mz)];
-  const points = T.pts.map(sh);
-  const area = Math.abs(polyArea(points));
-  if (area < 20000) { toast('部屋が小さすぎます。縮尺が合っているか確認してください'); return; }
-  const inner = T.inner.map(w => ({ id: uid(), a: sh(w.a), b: sh(w.b), t: 10, doors: [] }));
-  const openings = [];
-  const edgesNow = traceEdges();
-  for (const o of T.opens) {
-    const ed = edgesNow.find(e => e.kind === o.kind && e.i === o.i); if (!ed) continue;
-    const L = Math.hypot(ed.b[0] - ed.a[0], ed.b[1] - ed.a[1]), def = OPEN_DEF[o.ot];
-    const offset = round1(clamp(o.center - o.width / 2, 0, Math.max(0, L - o.width)));
-    if (o.kind === 'outer') openings.push({ id: uid(), wall: o.i, offset, width: o.width, type: def.type, height: def.height, sill: def.sill || 0, swing: def.type === 'door' ? (def.swing === 'slide' ? 'slide' : 'out') : 'in', hinge: 'left' });
-    else if (def.type === 'door') inner[o.i].doors.push({ id: uid(), offset, width: o.width, swing: def.swing, hinge: 'left', height: 200 });
-  }
-  pushUndo();
-  state = { v: 1, layoutId: null, name: 'なぞった部屋', room: { points, height: 240, thickness: 12, floorColor: '#c9a47c', wallColor: '#f4f0e8', floorType: 'wood', openings, inner, labels: [] }, items: [] };
-  normalizeState(state); selectedId = null;
-  const ul = { ...T.ul, x: T.ul.x - mx, z: T.ul.z - mz, opacity: 0.45, show: true };
-  endTrace();
-  saveUnderlay(ul);
-  fullRefresh(); frameCamera(); setView('3d');
-  toast(`部屋ができました（約${(area / 16200).toFixed(1)}帖）。家具を追加してデザインしましょう`);
-}
-function endTrace() {
-  trace = null; traceDownInfo = null;
-  if (traceUnderlay) { const tmp = new THREE.Group(); tmp.add(traceUnderlay); disposeGroup(tmp); traceUnderlay = null; }
-  disposeGroup(traceGroup); traceHover = null;
-  roomGroup.visible = itemsGroup.visible = overlayGroup.visible = handleGroup.visible = lightsGroup.visible = true;
-  $('#tracePanel').classList.remove('on');
-  refreshUnderlay();
-}
-/* 下絵（完成後も、上から表示で重ねて確認できる） */
-let underlay = loadLocal('room3d.underlay');
-function saveUnderlay(ul) { underlay = ul; try { localStorage.setItem(uk('room3d.underlay'), JSON.stringify(ul)); } catch (_) { toast('下絵が大きすぎて保存できませんでした（表示はこのままできます）'); } refreshUnderlay(); }
-function refreshUnderlay() {
-  disposeGroup(underlayGroup);
-  $('#ulCard').style.display = underlay ? '' : 'none';
-  if (!underlay) return;
-  $('#ulShow').checked = underlay.show !== false; $('#ulOpacity').value = Math.round((underlay.opacity ?? 0.45) * 100);
-  underlayGroup.add(makeUnderlayMesh(underlay));
-  underlayGroup.visible = underlay.show !== false && viewMode === 'top' && !trace;
-}
-$('#ulShow').onchange = () => { if (!underlay) return; underlay.show = $('#ulShow').checked; saveUnderlay(underlay); if (underlay.show && viewMode !== 'top') toast('下絵は「上から」表示のときに見えます'); };
-$('#ulOpacity').oninput = () => { if (!underlay) return; underlay.opacity = +$('#ulOpacity').value / 100; underlayGroup.traverse(o => { if (o.material) o.material.opacity = underlay.opacity; }); };
-$('#ulOpacity').onchange = () => { if (underlay) saveUnderlay(underlay); };
-$('#ulDelete').onclick = () => { underlay = null; try { localStorage.removeItem(uk('room3d.underlay')); } catch (_) {} refreshUnderlay(); toast('下絵を削除しました'); };
-// パネル操作
-$('#trSteps').onclick = e => { const b = e.target.closest('[data-step]'); if (b) setTraceStep(b.dataset.step); };
-$('#trNext').onclick = () => {
-  const order = ['scale', 'outline', 'inner', 'open'], i = order.indexOf(trace.step);
-  if (trace.step === 'outline' && !trace.closed) {
-    if (trace.pts.length >= 3) { trace.closed = true; toast('外周を閉じました'); } else { toast('外周の角を3つ以上クリックしてください'); return; }
-  }
-  setTraceStep(order[Math.min(i + 1, 3)]);
-};
-$('#trDone').onclick = () => finishTrace();
-$('#trCancel').onclick = () => { endTrace(); fullRefresh(); toast('なぞるのをやめました'); };
-$('#trUndo').onclick = () => {
-  const T = trace; if (!T) return;
-  if (T.step === 'scale') T.scalePts.pop();
-  else if (T.step === 'outline') { if (T.closed) T.closed = false; else T.pts.pop(); }
-  else if (T.step === 'inner') { if (T.innerStart) T.innerStart = null; else T.inner.pop(); }
-  else if (T.step === 'open') T.opens.pop();
-  setTraceStep(T.step);
-};
-$('#trOpacity').oninput = () => { if (trace) { trace.ul.opacity = +$('#trOpacity').value / 100; if (traceUnderlay) traceUnderlay.material.opacity = trace.ul.opacity; } };
-$('#trOpenType').onclick = e => { const b = e.target.closest('[data-ot]'); if (!b || !trace) return; trace.openType = b.dataset.ot; document.querySelectorAll('#trOpenType button').forEach(x => x.classList.toggle('on', x === b)); };
-$('#trScaleOk').onclick = () => {
-  const T = trace, real = num($('#trLen').value);
-  if (!T || T.scalePts.length !== 2 || !(real > 10)) { toast('2点をクリックして、実際の長さ（cm）を入れてください'); return; }
-  const [a, b] = T.scalePts, cur = Math.hypot(b[0] - a[0], b[1] - a[1]); if (cur < 1) return;
-  const f = real / cur;
-  T.ul.w *= f; T.ul.h *= f; T.ul.x *= f; T.ul.z *= f;
-  T.pts = T.pts.map(([x, z]) => [Math.round(x * f), Math.round(z * f)]);
-  T.inner = T.inner.map(w => ({ a: w.a.map(v => Math.round(v * f)), b: w.b.map(v => Math.round(v * f)) }));
-  T.scalePts = [];
-  if (traceUnderlay) { const tmp = new THREE.Group(); tmp.add(traceUnderlay); disposeGroup(tmp); }
-  traceUnderlay = makeUnderlayMesh(T.ul); scene.add(traceUnderlay);
-  fitOrthoTo(T.ul.x, T.ul.z, T.ul.x + T.ul.w, T.ul.z + T.ul.h);
-  $('#trLen').value = '';
-  toast(`縮尺を合わせました（${Math.round(f * 100)}%）。次は外周をなぞります`);
-  setTraceStep('outline');
-};
-$('#trLen').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('#trScaleOk').click(); } });
-$('#stTrace').onclick = () => { if (stFiles.length) startTrace(stFiles[0].file); };
-$('#trFile').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) startTrace(f); };
-refreshUnderlay();
-
 /* ================= 起動 ================= */
 resize();
 fullRefresh();
@@ -3519,7 +3181,7 @@ async function useCap(name) {
     try { const lim = await s.limits?.(); aiImages = !!(lim && lim.images); } catch (_) { aiImages = false; }
     if (aiImages) $('#shotLabel').style.display = '';
   }
-  aiChecked = true; updateBuildBtn();
+  aiChecked = true; updateBuildBtn(); if (typeof updateAiCard === 'function') updateAiCard();
 })();
 /* ---------- ログイン画面 ---------- */
 function showAuth(mode = 'login') {
@@ -3540,7 +3202,6 @@ function afterLogin(id) {
   const saved = loadLocal('room3d.current');
   state = saved || defaultState(); if (!saved) { state.items = []; state.name = 'マイルーム'; }
   normalizeState(state); undoStack.length = 0; selectedId = null; inspectorOpen = false;
-  underlay = loadLocal('room3d.underlay'); refreshUnderlay();
   fullRefresh(); frameCamera(); updateUserUi();
   $('#authGate').style.display = 'none';
   openStart(true, !!saved);
@@ -3594,8 +3255,18 @@ $('#btnLogout').onclick = () => {
 updateUserUi();
 if (STANDALONE && !currentUser) showAuth('login');
 else openStart(true);
+/* 間取り図・写真から作る機能は、このアプリの持ち主（claude.ai でこのアカウントから開いたとき）だけに出す */
+let isOwnerView = false;
+function updateAiCard() {
+  const show = !!(isOwnerView && aiSample && aiImages);
+  $('#stAiCol').style.display = show ? '' : 'none';
+  $('#spGrid').classList.toggle('single', !show);
+  $('#stTplNum').textContent = show ? '2' : '1';
+}
 (async () => {
   const [d, u] = await Promise.all([useCap('db'), useCap('user')]);
+  try { isOwnerView = !!(u && typeof u.isOwner === 'function' && u.isOwner()); } catch (_) { isOwnerView = false; }
+  updateAiCard();
   if (d && u) { try { userId = await u.id(); } catch (_) { userId = null; } if (userId) db = d; }
   $('#saveWhere').textContent = db ? '保存先：あなたのアカウント（自分だけが見られます）。どの端末から開いても続きができます。' : '保存先：このブラウザ。別の端末で使うときは「JSONをコピー」で持ち出せます。';
   if ($('#pane-save').classList.contains('on')) renderLayouts();
