@@ -456,6 +456,10 @@ main{position:relative;min-width:0;min-height:0}
         <div class="list" id="layoutList"></div>
         <button class="btn full" id="btnNew">新しい部屋を作る</button>
 
+        <h2>URLで共有する</h2>
+        <p class="hint">今の部屋（間取り・家具）を、ほかの人が開いて使えるURLにします。開いた人には部屋のコピーが届くので、あなたのデータは変わりません。</p>
+        <button class="btn primary full" id="btnShareSave">🔗 この部屋のURLを発行</button>
+
         <h2>データの書き出し・読み込み</h2>
         <p class="hint">JSONで書き出せば、別の端末や後からでも同じレイアウトを再現できます。</p>
         <div class="row">
@@ -549,6 +553,7 @@ main{position:relative;min-width:0;min-height:0}
   <aside id="furnPanel" aria-label="メニューと配置した家具の一覧">
     <nav class="fp-menu">
       <button class="fp-menu-item" id="btnHome"><span>🏠</span>ホーム<small>最初の画面に戻る</small></button>
+      <button class="fp-menu-item" id="btnShareMenu"><span>🔗</span>共有URLを発行<small>この部屋をほかの人に</small></button>
       <button class="fp-menu-item" id="btnLogout" style="display:none"><span>🚪</span>ログアウト<small id="logoutWho"></small></button>
     </nav>
     <div class="fp-head">
@@ -649,6 +654,18 @@ main{position:relative;min-width:0;min-height:0}
     <button class="btn" id="hmCancel">キャンセル（このまま続ける）</button>
   </div>
   <div id="hmMsg"></div>
+</div></div>
+<div class="modal" id="shareModal" role="dialog" aria-modal="true" aria-labelledby="shTitle"><div class="box home-box">
+  <h3 id="shTitle">🔗 共有URLを発行しました</h3>
+  <p class="hint" style="margin:0 0 8px">このURLを送ると、相手はブラウザで開くだけで「<b id="shName"></b>」を使えます（相手はログイン画面で新規作成してから使います）。</p>
+  <textarea id="shUrl" readonly style="min-height:90px;font-size:12px;word-break:break-all"></textarea>
+  <div class="row" style="margin-top:8px">
+    <button class="btn primary" id="shCopy">URLをコピー</button>
+    <a class="btn" id="shOpen" target="_blank" rel="noopener">開いてみる ↗</a>
+  </div>
+  <p class="hint" id="shInfo"></p>
+  <p class="hint">URLの中に部屋のデータが入っています。部屋を変えたら、もう一度発行してください。</p>
+  <button class="btn full" id="shClose">閉じる</button>
 </div></div>
 <div class="modal" id="shotModal"><div class="box">
   <div class="row" style="margin-bottom:10px;align-items:center"><strong>レイアウト画像</strong><button class="btn small shrink" id="shotClose">閉じる</button></div>
@@ -2865,6 +2882,64 @@ $('#btnExport').onclick = async () => {
   try { await navigator.clipboard.writeText(txt); toast('JSONをコピーしました'); }
   catch (_) { box.select(); toast('下の欄を選択してコピーしてください'); }
 };
+/* ---------- 共有URL（部屋のデータをURLに入れて渡す。サーバー不要） ---------- */
+const SHARE_BASE = 'https://sm-hotel.github.io/my-intere/';
+const b64url = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode(...u8.subarray(i, i + 0x8000)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+const unb64url = t => { t = t.replace(/-/g, '+').replace(/_/g, '/'); while (t.length % 4) t += '='; return Uint8Array.from(atob(t), c => c.charCodeAt(0)); };
+async function streamBytes(u8, ctor) { const st = new Blob([u8]).stream().pipeThrough(new ctor('deflate-raw')); return new Uint8Array(await new Response(st).arrayBuffer()); }
+async function encodePlan(obj) {
+  const raw = new TextEncoder().encode(JSON.stringify(obj));
+  if (typeof CompressionStream === 'function') { try { return 'z' + b64url(await streamBytes(raw, CompressionStream)); } catch (_) {} }
+  return 'j' + b64url(raw);
+}
+async function decodePlan(code) {
+  const kind = code[0], bytes = unb64url(code.slice(1));
+  const raw = kind === 'z' ? await streamBytes(bytes, DecompressionStream) : bytes;
+  return JSON.parse(new TextDecoder().decode(raw));
+}
+function sharePayload() {
+  const st = cleanState(); delete st.layoutId;
+  const strip = items => (items || []).map(({ _warn, ...i }) => i);
+  if (st.levels) st.levels = st.levels.map(L => ({ ...L, items: strip(L.items) }));
+  st.items = strip(st.items);
+  if (st.levels) { delete st.room; delete st.items; }
+  return { kind: 'my-intere-plan', v: 1, plan: st };
+}
+async function openShare() {
+  if (typeof setDrawer === 'function') setDrawer(false);
+  syncLevel();
+  const code = await encodePlan(sharePayload());
+  const url = SHARE_BASE + '#plan=' + code;
+  $('#shName').textContent = state.name || 'マイルーム';
+  $('#shUrl').value = url; $('#shOpen').href = url;
+  $('#shInfo').textContent = `URLの長さ：${url.length.toLocaleString()}文字${url.length > 30000 ? '（とても長いので、LINEなどでは送れないことがあります。家具を減らすと短くなります）' : ''}`;
+  $('#shareModal').classList.add('on');
+}
+$('#btnShareSave').onclick = openShare;
+$('#btnShareMenu').onclick = openShare;
+$('#shClose').onclick = () => $('#shareModal').classList.remove('on');
+$('#shareModal').onclick = e => { if (e.target.id === 'shareModal') $('#shareModal').classList.remove('on'); };
+$('#shCopy').onclick = async () => {
+  try { await navigator.clipboard.writeText($('#shUrl').value); toast('URLをコピーしました'); }
+  catch (_) { $('#shUrl').select(); toast('URLを選択しました。Ctrl+C でコピーしてください'); }
+};
+// 共有URLから開いたとき
+let pendingPlan = null;
+const sharedCode = (location.hash.match(/^#plan=([A-Za-z0-9_-]+)$/) || [])[1] || null;
+async function readSharedPlan() {
+  if (!sharedCode) return null;
+  try { const d = await decodePlan(sharedCode); return d && d.kind === 'my-intere-plan' && d.plan ? d.plan : null; } catch (_) { return null; }
+}
+function applySharedPlan() {
+  if (!pendingPlan) return false;
+  const p = JSON.parse(JSON.stringify(pendingPlan)); pendingPlan = null;
+  if (p.levels && p.levels.length) { p.lv = 0; }
+  p.layoutId = null;
+  pushUndo(); state = p; normalizeState(state); selectedId = null; fullRefresh(); frameCamera(); closeStart();
+  try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
+  toast(`共有された「${state.name || '部屋'}」を開きました。自由にデザインできます`);
+  return true;
+}
 function importJson(txt) {
   try {
     const s = JSON.parse(txt); if (!s.room || !Array.isArray(s.items)) throw new Error();
@@ -3205,6 +3280,7 @@ function afterLogin(id) {
   fullRefresh(); frameCamera(); updateUserUi();
   $('#authGate').style.display = 'none';
   openStart(true, !!saved);
+  applySharedPlan();
 }
 $('#toSignup').onclick = () => showAuth('signup');
 $('#toLogin').onclick = () => showAuth('login');
@@ -3255,6 +3331,12 @@ $('#btnLogout').onclick = () => {
 updateUserUi();
 if (STANDALONE && !currentUser) showAuth('login');
 else openStart(true);
+readSharedPlan().then(p => {
+  if (!p) { if (sharedCode) toast('共有URLを読み込めませんでした。URLが途中で切れていないか確認してください'); return; }
+  pendingPlan = p;
+  if (!STANDALONE || currentUser) applySharedPlan();
+  else showMsg('#liMsg', 'info', `共有された「${esc(p.name || '部屋')}」を開こうとしています。ログイン（はじめての方は新規作成）すると使えます。`);
+});
 /* 間取り図・写真から作る機能は、このアプリの持ち主（claude.ai でこのアカウントから開いたとき）だけに出す */
 let isOwnerView = false;
 function updateAiCard() {
